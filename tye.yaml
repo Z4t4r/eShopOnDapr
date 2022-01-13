@@ -5,6 +5,15 @@
 #    https://aka.ms/AA7q20u
 #
 name: eshopondapr
+registry: registry.cn-hangzhou.aliyuncs.com/arcv4
+extensions:
+  - name: dapr
+    components-path: "./dapr_components/"
+  # config: claptrap_config
+  #    exclude-placement-container: true
+  #    placement-port: 6050
+  - name: zipkin
+  - name: seq
 services:
 - name: identity-api
   project: src/Services/Identity/Identity.API/Identity.API.csproj
@@ -22,3 +31,10 @@ services:
   project: src/Web/WebSPA/WebSPA.csproj
 - name: payment-api
   project: src/Services/Payment/Payment.API/Payment.API.csproj
+  
+  
+- name: zipkin
+  external: true
+  bindings:
+    - name: http
+      port: 9411
