@@ -1,0 +1,24 @@
+# tye application configuration file
+# read all about it at https://github.com/dotnet/tye
+#
+# when you've given us a try, we'd love to know what you think:
+#    https://aka.ms/AA7q20u
+#
+name: eshopondapr
+services:
+- name: identity-api
+  project: src/Services/Identity/Identity.API/Identity.API.csproj
+- name: webstatus
+  project: src/Web/WebStatus/WebStatus.csproj
+- name: catalog-api
+  project: src/Services/Catalog/Catalog.API/Catalog.API.csproj
+- name: web-shopping-httpaggregator
+  project: src/ApiGateways/Aggregators/Web.Shopping.HttpAggregator/Web.Shopping.HttpAggregator.csproj
+- name: basket-api
+  project: src/Services/Basket/Basket.API/Basket.API.csproj
+- name: ordering-api
+  project: src/Services/Ordering/Ordering.API/Ordering.API.csproj
+- name: webspa
+  project: src/Web/WebSPA/WebSPA.csproj
+- name: payment-api
+  project: src/Services/Payment/Payment.API/Payment.API.csproj
