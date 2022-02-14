@@ -31,16 +31,16 @@ namespace Microsoft.eShopOnContainers.Services.Ordering.API
                 var host = BuildWebHost(configuration, args);
 
                 Log.Information("Applying migrations ({ApplicationContext})...", AppName);
-                host.MigrateDbContext<OrderingContext>((context, services) =>
-                {
-                    var env = services.GetService<IWebHostEnvironment>();
-                    var settings = services.GetService<IOptions<OrderingSettings>>();
-                    var logger = services.GetService<ILogger<OrderingContextSeed>>();
-
-                    new OrderingContextSeed()
-                        .SeedAsync(context, env, settings, logger)
-                        .Wait();
-                });
+                // host.MigrateDbContext<OrderingContext>((context, services) =>
+                // {
+                //     var env = services.GetService<IWebHostEnvironment>();
+                //     var settings = services.GetService<IOptions<OrderingSettings>>();
+                //     var logger = services.GetService<ILogger<OrderingContextSeed>>();
+                //
+                //     new OrderingContextSeed()
+                //         .SeedAsync(context, env, settings, logger)
+                //         .Wait();
+                // });
 
                 Log.Information("Starting web host ({ApplicationContext})...", AppName);
                 host.Run();

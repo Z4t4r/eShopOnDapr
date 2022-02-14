@@ -85,7 +85,7 @@ namespace Microsoft.eShopOnContainers.Services.Basket.API
 
             ConfigureAuthService(services);
 
-            services.AddCustomHealthCheck(Configuration);
+            //services.AddCustomHealthCheck(Configuration);
 
             services.AddCors(options =>
             {
@@ -124,7 +124,10 @@ namespace Microsoft.eShopOnContainers.Services.Basket.API
                .UseSwaggerUI(setup =>
                {
                    setup.SwaggerEndpoint($"{ (!string.IsNullOrEmpty(pathBase) ? pathBase : string.Empty) }/swagger/v1/swagger.json", "Basket.API V1");
-                   setup.OAuthClientId("basketswaggerui");
+                   //setup.OAuthClientId("basketswaggerui");
+                   setup.OAuthClientId(Configuration["AzureAd:ClientId"]);
+                   setup.OAuthClientSecret(Configuration["AzureAd:ClientSecret"]);
+                   setup.OAuthUseBasicAuthenticationWithAccessCodeGrant();
                    setup.OAuthAppName("Basket Swagger UI");
                });
 
@@ -140,15 +143,15 @@ namespace Microsoft.eShopOnContainers.Services.Basket.API
                 endpoints.MapDefaultControllerRoute();
                 endpoints.MapControllers();
                 endpoints.MapSubscribeHandler();
-                endpoints.MapHealthChecks("/hc", new HealthCheckOptions()
-                {
-                    Predicate = _ => true,
-                    ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
-                });
-                endpoints.MapHealthChecks("/liveness", new HealthCheckOptions
-                {
-                    Predicate = r => r.Name.Contains("self")
-                });
+                // endpoints.MapHealthChecks("/hc", new HealthCheckOptions()
+                // {
+                //     Predicate = _ => true,
+                //     ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+                // });
+                // endpoints.MapHealthChecks("/liveness", new HealthCheckOptions
+                // {
+                //     Predicate = r => r.Name.Contains("self")
+                // });
             });
         }
 

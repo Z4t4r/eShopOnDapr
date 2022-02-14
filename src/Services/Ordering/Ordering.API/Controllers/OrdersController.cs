@@ -5,6 +5,7 @@ using System.Net;
 using System.Threading.Tasks;
 using Dapr.Actors;
 using Dapr.Actors.Client;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.eShopOnContainers.Services.Ordering.API.Actors;
@@ -14,7 +15,7 @@ using Microsoft.eShopOnContainers.Services.Ordering.API.Model;
 namespace Microsoft.eShopOnContainers.Services.Ordering.API.Controllers
 {
     [Route("api/v1/[controller]")]
-    [Authorize]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [ApiController]
     public class OrdersController : ControllerBase
     {
