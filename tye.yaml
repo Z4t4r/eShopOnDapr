@@ -15,20 +15,20 @@ extensions:
   - name: zipkin
   - name: seq
 services:
-#- name: identity-api
-#  project: src/Services/Identity/Identity.API/Identity.API.csproj
-#- name: webstatus
-#  project: src/Web/WebStatus/WebStatus.csproj
+- name: identity-api
+  project: src/Services/Identity/Identity.API/Identity.API.csproj
+- name: webstatus
+  project: src/Web/WebStatus/WebStatus.csproj
 - name: catalog-api
   project: src/Services/Catalog/Catalog.API/Catalog.API.csproj
-#- name: web-shopping-httpaggregator
-#  project: src/ApiGateways/Aggregators/Web.Shopping.HttpAggregator/Web.Shopping.HttpAggregator.csproj
+- name: web-shopping-httpaggregator
+  project: src/ApiGateways/Aggregators/Web.Shopping.HttpAggregator/Web.Shopping.HttpAggregator.csproj
 - name: basket-api
   project: src/Services/Basket/Basket.API/Basket.API.csproj
 - name: ordering-api
   project: src/Services/Ordering/Ordering.API/Ordering.API.csproj
-#- name: webspa
-#  project: src/Web/WebSPA/WebSPA.csproj
+- name: webspa
+  project: src/Web/WebSPA/WebSPA.csproj
 - name: payment-api
   project: src/Services/Payment/Payment.API/Payment.API.csproj
   
@@ -38,8 +38,3 @@ services:
   bindings:
     - name: http
       port: 9411
-#- name: mysql
-#  external: true
-#  bindings:
-#    - port: 3306
-#      connectionString: Server=${host};Port=${port};Database=claptrap;Uid=claptrap;Pwd=mZBLZAtne5YHBein;

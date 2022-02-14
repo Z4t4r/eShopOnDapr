@@ -1,4 +1,4 @@
-using Autofac;
+﻿using Autofac;
 using Autofac.Extensions.DependencyInjection;
 using global::Catalog.API.Infrastructure.Filters;
 using global::Catalog.API.IntegrationEvents;
@@ -41,18 +41,19 @@ namespace Microsoft.eShopOnContainers.Services.Catalog.API
         {
             services.AddAppInsight(Configuration)
                 .AddCustomMVC(Configuration)
-                .AddCustomMySqlDbContext(Configuration)
+                .AddCustomDbContext(Configuration)
                 .AddCustomOptions(Configuration)
                 .AddIntegrationServices(Configuration)
                 .AddEventBus()
-                .AddSwagger(Configuration);
-                //.AddCustomHealthCheck(Configuration);
+                .AddSwagger(Configuration)
+                .AddCustomHealthCheck(Configuration);
 
             var container = new ContainerBuilder();
             container.Populate(services);
 
             return new AutofacServiceProvider(container.Build());
         }
+
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILoggerFactory loggerFactory)
         {
             //Configure logs
@@ -96,15 +97,15 @@ namespace Microsoft.eShopOnContainers.Services.Catalog.API
                         }
                     }
                 });
-                // endpoints.MapHealthChecks("/hc", new HealthCheckOptions()
-                // {
-                //     Predicate = _ => true,
-                //     ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
-                // });
-                // endpoints.MapHealthChecks("/liveness", new HealthCheckOptions
-                // {
-                //     Predicate = r => r.Name.Contains("self")
-                // });
+                endpoints.MapHealthChecks("/hc", new HealthCheckOptions()
+                {
+                    Predicate = _ => true,
+                    ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+                });
+                endpoints.MapHealthChecks("/liveness", new HealthCheckOptions
+                {
+                    Predicate = r => r.Name.Contains("self")
+                });
             });
         }
     }
@@ -151,7 +152,7 @@ namespace Microsoft.eShopOnContainers.Services.Catalog.API
             hcBuilder
                 .AddCheck("self", () => HealthCheckResult.Healthy())
                 .AddSqlServer(
-                    configuration.GetConnectionString("mysql"),
+                    configuration["ConnectionString"],
                     name: "CatalogDB-check",
                     tags: new string[] { "catalogdb" });
 
@@ -172,7 +173,7 @@ namespace Microsoft.eShopOnContainers.Services.Catalog.API
             services.AddEntityFrameworkSqlServer()
                 .AddDbContext<CatalogContext>(options =>
             {
-                options.UseSqlServer(configuration.GetConnectionString("mysql"),
+                options.UseSqlServer(configuration["ConnectionString"],
                                      sqlServerOptionsAction: sqlOptions =>
                                      {
                                          sqlOptions.MigrationsAssembly(typeof(Startup).GetTypeInfo().Assembly.GetName().Name);
@@ -183,37 +184,8 @@ namespace Microsoft.eShopOnContainers.Services.Catalog.API
 
             services.AddDbContext<IntegrationEventLogContext>(options =>
             {
-                options.UseSqlServer(configuration.GetConnectionString("mysql"),
+                options.UseSqlServer(configuration["ConnectionString"],
                                      sqlServerOptionsAction: sqlOptions =>
-                                     {
-                                         sqlOptions.MigrationsAssembly(typeof(Startup).GetTypeInfo().Assembly.GetName().Name);
-                                         //Configuring Connection Resiliency: https://docs.microsoft.com/en-us/ef/core/miscellaneous/connection-resiliency 
-                                         sqlOptions.EnableRetryOnFailure(maxRetryCount: 15, maxRetryDelay: TimeSpan.FromSeconds(30), errorNumbersToAdd: null);
-                                     });
-            });
-
-            return services;
-        }
-        public static IServiceCollection AddCustomMySqlDbContext(this IServiceCollection services, IConfiguration configuration)
-        {
-            services.AddEntityFrameworkMySql()
-                .AddDbContext<CatalogContext>(options =>
-                {
-                    options.UseMySql(configuration.GetConnectionString("mysql"),
-                                           new MySqlServerVersion(new Version(8, 0, 27)),
-                                         mySqlOptionsAction: sqlOptions =>
-                                         {
-                                             sqlOptions.MigrationsAssembly(typeof(Startup).GetTypeInfo().Assembly.GetName().Name);
-                                         //Configuring Connection Resiliency: https://docs.microsoft.com/en-us/ef/core/miscellaneous/connection-resiliency 
-                                         sqlOptions.EnableRetryOnFailure(maxRetryCount: 15, maxRetryDelay: TimeSpan.FromSeconds(30), errorNumbersToAdd: null);
-                                         });
-                });
-
-            services.AddDbContext<IntegrationEventLogContext>(options =>
-            {
-                options.UseMySql(configuration.GetConnectionString("mysql"),
-                    new MySqlServerVersion(new Version(8, 0, 27)),
-                                     mySqlOptionsAction: sqlOptions =>
                                      {
                                          sqlOptions.MigrationsAssembly(typeof(Startup).GetTypeInfo().Assembly.GetName().Name);
                                          //Configuring Connection Resiliency: https://docs.microsoft.com/en-us/ef/core/miscellaneous/connection-resiliency 
@@ -264,7 +236,6 @@ namespace Microsoft.eShopOnContainers.Services.Catalog.API
             return services;
 
         }
-
 
         public static IServiceCollection AddIntegrationServices(this IServiceCollection services, IConfiguration configuration)
         {
