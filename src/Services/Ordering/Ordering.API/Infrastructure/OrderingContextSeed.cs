@@ -18,7 +18,6 @@ namespace Microsoft.eShopOnContainers.Services.Ordering.API.Infrastructure
         public async Task SeedAsync(OrderingContext context, IWebHostEnvironment env, IOptions<OrderingSettings> settings, ILogger<OrderingContextSeed> logger)
         {
             var policy = CreatePolicy(logger, nameof(OrderingContextSeed));
-
             await policy.ExecuteAsync(async () =>
             {
                 var contentRootPath = env.ContentRootPath;

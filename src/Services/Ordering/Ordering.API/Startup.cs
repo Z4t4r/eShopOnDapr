@@ -97,7 +97,7 @@ namespace Microsoft.eShopOnContainers.Services.Ordering.API
                .UseSwaggerUI(c =>
                {
                    c.SwaggerEndpoint($"{ (!string.IsNullOrEmpty(pathBase) ? pathBase : string.Empty) }/swagger/v1/swagger.json", "Ordering.API V1");
-                   c.OAuthClientId(Configuration["orderingswaggerui"]);
+                   c.OAuthClientId(Configuration["OpenIdClientId"]);
                    c.OAuthAppName("Ordering Swagger UI");
                    //c.OAuthClientSecret("Xf57Q~m5e8WjXi~g54BqrIdbApqSggda89rvS");
                    c.OAuthUseBasicAuthenticationWithAccessCodeGrant(); 

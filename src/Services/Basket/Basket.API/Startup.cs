@@ -127,7 +127,7 @@ namespace Microsoft.eShopOnContainers.Services.Basket.API
                .UseSwaggerUI(setup =>
                {
                    setup.SwaggerEndpoint($"{ (!string.IsNullOrEmpty(pathBase) ? pathBase : string.Empty) }/swagger/v1/swagger.json", "Basket.API V1");
-                   setup.OAuthClientId("basketswaggerui");
+                   setup.OAuthClientId(Configuration["OpenIdClientId"]);
                    setup.OAuthAppName("Basket Swagger UI");
                    setup.OAuthUseBasicAuthenticationWithAccessCodeGrant();
                });

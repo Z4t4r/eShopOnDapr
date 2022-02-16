@@ -70,7 +70,7 @@ namespace Microsoft.eShopOnContainers.Web.Shopping.HttpAggregator
             {
                 c.SwaggerEndpoint($"{ (!string.IsNullOrEmpty(pathBase) ? pathBase : string.Empty) }/swagger/v1/swagger.json", "Purchase BFF V1");
 
-                c.OAuthClientId("webshoppingaggswaggerui");
+                c.OAuthClientId(Configuration["OpenIdClientId"]);
                 //c.OAuthClientSecret(string.Empty);
                 //c.OAuthRealm(string.Empty);
                 c.OAuthAppName("web shopping bff Swagger UI");
