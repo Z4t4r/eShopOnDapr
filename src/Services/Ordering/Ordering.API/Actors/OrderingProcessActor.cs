@@ -69,10 +69,11 @@ namespace Microsoft.eShopOnContainers.Services.Ordering.API.Actors
                     })
                     .ToList()
             };
-
+            _logger.LogInformation("order->{}", JsonConvert.SerializeObject(order));
+            _logger.LogInformation("ready to set Detail and Status State");
             await StateManager.SetStateAsync(OrderDetailsStateName, order);
             await StateManager.SetStateAsync(OrderStatusStateName, OrderStatus.Submitted);
-
+            _logger.LogInformation(" Detail and Status State after set");
             await RegisterReminderAsync(
                 GracePeriodElapsedReminder,
                 null,
@@ -300,13 +301,14 @@ namespace Microsoft.eShopOnContainers.Services.Ordering.API.Actors
 
         protected override async Task OnPostActorMethodAsync(ActorMethodContext actorMethodContext)
         {
-            var postMethodOrderStatus = await StateManager.GetStateAsync<OrderStatus>(OrderStatusStateName);
-
-            if (_preMethodOrderStatusId != postMethodOrderStatus.Id)
-            {
-                _logger.LogInformation("Order with Id: {OrderId} has been updated to status {Status}",
-                    OrderId, postMethodOrderStatus.Name);
-            }
+            await base.OnPostActorMethodAsync(actorMethodContext);
+            // var postMethodOrderStatus = await StateManager.GetStateAsync<OrderStatus>(OrderStatusStateName);
+            //
+            // if (_preMethodOrderStatusId != postMethodOrderStatus.Id)
+            // {
+            //     _logger.LogInformation("Order with Id: {OrderId} has been updated to status {Status}",
+            //         OrderId, postMethodOrderStatus.Name);
+            // }
         }
 
         private async Task<bool> TryUpdateOrderStatusAsync(OrderStatus expectedOrderStatus, OrderStatus newOrderStatus)

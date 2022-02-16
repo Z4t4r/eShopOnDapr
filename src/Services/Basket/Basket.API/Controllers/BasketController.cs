@@ -57,6 +57,7 @@ namespace Microsoft.eShopOnContainers.Services.Basket.API.Controllers
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         public async Task<ActionResult> CheckoutAsync([FromBody]BasketCheckout basketCheckout, [FromHeader(Name = "x-requestid")] string requestId)
         {
+            _logger.LogInformation("CheckoutAsync_testInfo");
             var userId = _identityService.GetUserIdentity();
 
             basketCheckout.RequestId = (Guid.TryParse(requestId, out Guid guid) && guid != Guid.Empty) ?
@@ -69,7 +70,7 @@ namespace Microsoft.eShopOnContainers.Services.Basket.API.Controllers
                 return BadRequest();
             }
 
-            var userName = this.HttpContext.User.FindFirst(x => x.Type == ClaimTypes.Name).Value;
+            var userName = _identityService.GetUserName();
 
             var eventMessage = new UserCheckoutAcceptedIntegrationEvent(
                 userId,

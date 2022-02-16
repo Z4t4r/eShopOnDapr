@@ -60,3 +60,7 @@ ingress:
         service: ordering-api
       - host: payment.example.com
         service: payment-api
+#      - host: webspa.example.com
+#        service: webspa
+#      - host: webstatus.example.com
+#        service: webstatus
