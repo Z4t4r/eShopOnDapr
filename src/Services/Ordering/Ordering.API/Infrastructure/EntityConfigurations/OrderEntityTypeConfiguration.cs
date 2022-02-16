@@ -14,8 +14,8 @@ namespace Microsoft.eShopOnContainers.Services.Ordering.API.Infrastructure.Entit
 
             orderConfiguration.HasAlternateKey(o => o.OrderNumber);
 
-            orderConfiguration.Property(o => o.OrderNumber)
-                .UseHiLo("orderseq", OrderingContext.DEFAULT_SCHEMA);
+            //orderConfiguration.Property(o => o.OrderNumber)
+            //    .UseHiLo("orderseq", OrderingContext.DEFAULT_SCHEMA);
 
             orderConfiguration
                 .OwnsOne(o => o.Address, a =>

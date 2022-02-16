@@ -5,7 +5,7 @@
 #    https://aka.ms/AA7q20u
 #
 name: eshopondapr
-registry: registry.cn-hangzhou.aliyuncs.com/arcv4
+registry: ccr.ccs.tencentyun.com/v4ni11a
 extensions:
   - name: dapr
     components-path: "./dapr_components/"
@@ -14,11 +14,12 @@ extensions:
   #    placement-port: 6050
   - name: zipkin
   - name: seq
+    logPath: ./.logs
 services:
-- name: identity-api
-  project: src/Services/Identity/Identity.API/Identity.API.csproj
-- name: webstatus
-  project: src/Web/WebStatus/WebStatus.csproj
+#- name: identity-api
+#  project: src/Services/Identity/Identity.API/Identity.API.csproj
+#- name: webstatus
+#  project: src/Web/WebStatus/WebStatus.csproj
 - name: catalog-api
   project: src/Services/Catalog/Catalog.API/Catalog.API.csproj
 - name: web-shopping-httpaggregator
@@ -27,8 +28,8 @@ services:
   project: src/Services/Basket/Basket.API/Basket.API.csproj
 - name: ordering-api
   project: src/Services/Ordering/Ordering.API/Ordering.API.csproj
-- name: webspa
-  project: src/Web/WebSPA/WebSPA.csproj
+#- name: webspa
+#  project: src/Web/WebSPA/WebSPA.csproj
 - name: payment-api
   project: src/Services/Payment/Payment.API/Payment.API.csproj
   
@@ -38,3 +39,8 @@ services:
   bindings:
     - name: http
       port: 9411
+- name: mysql
+  external: true
+  bindings:
+    - port: 3306
+      connectionString: server=192.168.31.6;user=root;password=a12345678;database=Enterprise_Outsourcing;

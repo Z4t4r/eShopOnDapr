@@ -3,7 +3,9 @@ using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
+using Microsoft.Identity.Web;
 
 namespace Microsoft.eShopOnContainers.Services.Ordering.API.Infrastructure.Services
 {
@@ -18,12 +20,12 @@ namespace Microsoft.eShopOnContainers.Services.Ordering.API.Infrastructure.Servi
 
         public string GetUserIdentity()
         {
-            return _context.HttpContext.User.FindFirst("sub").Value;
+            return _context.HttpContext.User.FindFirstValue(ClaimConstants.ObjectId);
         }
 
         public string GetUserName()
         {
-            return _context.HttpContext.User.Identity.Name;
+            return _context.HttpContext.User.FindFirstValue(ClaimConstants.Name);
         }
     }
 }

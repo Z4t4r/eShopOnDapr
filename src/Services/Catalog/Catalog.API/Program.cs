@@ -41,7 +41,7 @@ namespace Microsoft.eShopOnContainers.Services.Catalog.API
                     var env = services.GetService<IWebHostEnvironment>();
                     var settings = services.GetService<IOptions<CatalogSettings>>();
                     var logger = services.GetService<ILogger<CatalogContextSeed>>();
-
+                
                     new CatalogContextSeed()
                         .SeedAsync(context, env, settings, logger)
                         .Wait();

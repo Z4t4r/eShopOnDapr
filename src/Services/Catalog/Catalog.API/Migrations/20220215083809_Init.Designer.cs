@@ -2,43 +2,48 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Microsoft.eShopOnContainers.BuildingBlocks.IntegrationEventLogEF;
 
-namespace Catalog.API.Infrastructure.IntegrationEventMigrations
+namespace Catalog.API.Migrations
 {
     [DbContext(typeof(IntegrationEventLogContext))]
-    [Migration("20190507184807_AddTransactionId")]
-    partial class AddTransactionId
+    [Migration("20220215083809_Init")]
+    partial class Init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "2.2.3-servicing-35854")
-                .HasAnnotation("Relational:MaxIdentifierLength", 128)
-                .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                .HasAnnotation("Relational:MaxIdentifierLength", 64)
+                .HasAnnotation("ProductVersion", "5.0.10");
 
             modelBuilder.Entity("Microsoft.eShopOnContainers.BuildingBlocks.IntegrationEventLogEF.IntegrationEventLogEntry", b =>
                 {
                     b.Property<Guid>("EventId")
-                        .ValueGeneratedOnAdd();
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)");
 
                     b.Property<string>("Content")
-                        .IsRequired();
+                        .IsRequired()
+                        .HasColumnType("longtext");
 
-                    b.Property<DateTime>("CreationTime");
+                    b.Property<DateTime>("CreationTime")
+                        .HasColumnType("datetime(6)");
 
                     b.Property<string>("EventTypeName")
-                        .IsRequired();
+                        .IsRequired()
+                        .HasColumnType("longtext");
 
-                    b.Property<int>("State");
+                    b.Property<int>("State")
+                        .HasColumnType("int");
 
-                    b.Property<int>("TimesSent");
+                    b.Property<int>("TimesSent")
+                        .HasColumnType("int");
 
-                    b.Property<string>("TransactionId");
+                    b.Property<string>("TransactionId")
+                        .HasColumnType("longtext");
 
                     b.HasKey("EventId");
 

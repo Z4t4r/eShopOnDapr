@@ -41,7 +41,8 @@ namespace Microsoft.eShopOnContainers.Services.Catalog.API
         {
             services.AddAppInsight(Configuration)
                 .AddCustomMVC(Configuration)
-                .AddCustomDbContext(Configuration)
+                //.AddCustomDbContext(Configuration)
+                .AddCustomMySqlDbContext(Configuration)
                 .AddCustomOptions(Configuration)
                 .AddIntegrationServices(Configuration)
                 .AddEventBus()
@@ -149,12 +150,12 @@ namespace Microsoft.eShopOnContainers.Services.Catalog.API
 
             var hcBuilder = services.AddHealthChecks();
 
-            hcBuilder
-                .AddCheck("self", () => HealthCheckResult.Healthy())
-                .AddSqlServer(
-                    configuration["ConnectionString"],
-                    name: "CatalogDB-check",
-                    tags: new string[] { "catalogdb" });
+            // hcBuilder
+            //     .AddCheck("self", () => HealthCheckResult.Healthy())
+            //     .AddSqlServer(
+            //         configuration["ConnectionString"],
+            //         name: "CatalogDB-check",
+            //         tags: new string[] { "catalogdb" });
 
             if (!string.IsNullOrEmpty(accountName) && !string.IsNullOrEmpty(accountKey))
             {
@@ -186,6 +187,35 @@ namespace Microsoft.eShopOnContainers.Services.Catalog.API
             {
                 options.UseSqlServer(configuration["ConnectionString"],
                                      sqlServerOptionsAction: sqlOptions =>
+                                     {
+                                         sqlOptions.MigrationsAssembly(typeof(Startup).GetTypeInfo().Assembly.GetName().Name);
+                                         //Configuring Connection Resiliency: https://docs.microsoft.com/en-us/ef/core/miscellaneous/connection-resiliency 
+                                         sqlOptions.EnableRetryOnFailure(maxRetryCount: 15, maxRetryDelay: TimeSpan.FromSeconds(30), errorNumbersToAdd: null);
+                                     });
+            });
+
+            return services;
+        }
+        public static IServiceCollection AddCustomMySqlDbContext(this IServiceCollection services, IConfiguration configuration)
+        {
+            services.AddEntityFrameworkSqlServer()
+                .AddDbContext<CatalogContext>(options =>
+                {
+                    options.UseMySql(configuration.GetConnectionString("mysql"),
+                                         new MySqlServerVersion(new Version(8, 0, 27)),
+                                         sqlOptions =>
+                                         {
+                                             sqlOptions.MigrationsAssembly(typeof(Startup).GetTypeInfo().Assembly.GetName().Name);
+                                         //Configuring Connection Resiliency: https://docs.microsoft.com/en-us/ef/core/miscellaneous/connection-resiliency 
+                                         sqlOptions.EnableRetryOnFailure(maxRetryCount: 15, maxRetryDelay: TimeSpan.FromSeconds(30), errorNumbersToAdd: null);
+                                         });
+                });
+
+            services.AddDbContext<IntegrationEventLogContext>(options =>
+            {
+                options.UseMySql(configuration.GetConnectionString("mysql"),
+                                     new MySqlServerVersion(new Version(8, 0, 27)),
+                                     sqlOptions =>
                                      {
                                          sqlOptions.MigrationsAssembly(typeof(Startup).GetTypeInfo().Assembly.GetName().Name);
                                          //Configuring Connection Resiliency: https://docs.microsoft.com/en-us/ef/core/miscellaneous/connection-resiliency 

@@ -23,6 +23,8 @@ using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using Newtonsoft.Json.Converters;
+using System.Linq;
+using Microsoft.Identity.Web;
 
 namespace Microsoft.eShopOnContainers.Services.Basket.API
 {
@@ -52,38 +54,39 @@ namespace Microsoft.eShopOnContainers.Services.Basket.API
                 // Added for functional tests
                 .AddApplicationPart(typeof(BasketController).Assembly)
                 .AddNewtonsoftJson(options => options.SerializerSettings.Converters.Add(new StringEnumConverter()));
+            services.AddCustomAADSwagger(Configuration);
 
-            services.AddSwaggerGen(options =>
-            {
-                options.SwaggerDoc("v1", new OpenApiInfo
-                {
-                    Title = "eShopOnDapr - Basket HTTP API",
-                    Version = "v1",
-                    Description = "The Basket Service HTTP API"
-                });
+            //services.AddSwaggerGen(options =>
+            //{
+            //    options.SwaggerDoc("v1", new OpenApiInfo
+            //    {
+            //        Title = "eShopOnDapr - Basket HTTP API",
+            //        Version = "v1",
+            //        Description = "The Basket Service HTTP API"
+            //    });
 
-                options.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme
-                {
-                    Type = SecuritySchemeType.OAuth2,
-                    Flows = new OpenApiOAuthFlows()
-                    {
-                        Implicit = new OpenApiOAuthFlow()
-                        {
-                            AuthorizationUrl = new Uri($"{Configuration.GetValue<string>("IdentityUrlExternal")}/connect/authorize"),
-                            TokenUrl = new Uri($"{Configuration.GetValue<string>("IdentityUrlExternal")}/connect/token"),
-                            Scopes = new Dictionary<string, string>()
-                            {
-                                { "basket", "Basket API" }
-                            }
-                        }
-                    }
-                });
+            //    options.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme
+            //    {
+            //        Type = SecuritySchemeType.OAuth2,
+            //        Flows = new OpenApiOAuthFlows()
+            //        {
+            //            Implicit = new OpenApiOAuthFlow()
+            //            {
+            //                AuthorizationUrl = new Uri($"{Configuration.GetValue<string>("IdentityUrlExternal")}/connect/authorize"),
+            //                TokenUrl = new Uri($"{Configuration.GetValue<string>("IdentityUrlExternal")}/connect/token"),
+            //                Scopes = new Dictionary<string, string>()
+            //                {
+            //                    { "basket", "Basket API" }
+            //                }
+            //            }
+            //        }
+            //    });
 
-                options.OperationFilter<AuthorizeCheckOperationFilter>();
-            });
+            //    options.OperationFilter<AuthorizeCheckOperationFilter>();
+            //});
             services.AddSwaggerGenNewtonsoftSupport();
 
-            ConfigureAuthService(services);
+            //ConfigureAuthService(services);
 
             services.AddCustomHealthCheck(Configuration);
 
@@ -126,6 +129,7 @@ namespace Microsoft.eShopOnContainers.Services.Basket.API
                    setup.SwaggerEndpoint($"{ (!string.IsNullOrEmpty(pathBase) ? pathBase : string.Empty) }/swagger/v1/swagger.json", "Basket.API V1");
                    setup.OAuthClientId("basketswaggerui");
                    setup.OAuthAppName("Basket Swagger UI");
+                   setup.OAuthUseBasicAuthenticationWithAccessCodeGrant();
                });
 
             app.UseRouting();
@@ -157,6 +161,7 @@ namespace Microsoft.eShopOnContainers.Services.Basket.API
             services.AddApplicationInsightsTelemetry(Configuration);
             services.AddApplicationInsightsKubernetesEnricher();
         }
+        
 
         private void ConfigureAuthService(IServiceCollection services)
         {
@@ -185,6 +190,7 @@ namespace Microsoft.eShopOnContainers.Services.Basket.API
         }
     }
 
+
     public static class CustomExtensionMethods
     {
         public static IServiceCollection AddCustomHealthCheck(this IServiceCollection services, IConfiguration configuration)
@@ -207,6 +213,55 @@ namespace Microsoft.eShopOnContainers.Services.Basket.API
         {
             services.AddScoped<IEventBus, DaprEventBus>();
             services.AddTransient<OrderStatusChangedToSubmittedIntegrationEventHandler>();
+
+            return services;
+        }
+        public static IServiceCollection AddCustomAADSwagger(this IServiceCollection services, IConfiguration configuration)
+        {
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "swaggerAADdemo", Version = "v1" });
+                c.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme
+                {
+                    Description = "OAuth2.0 Auth Code with PKCE",
+                    Name = "oauth2",
+                    Type = SecuritySchemeType.OAuth2,
+                    Flows = new OpenApiOAuthFlows
+                    {
+                        Implicit  = new OpenApiOAuthFlow
+                        {
+                            AuthorizationUrl = new Uri(configuration["AuthorizationUrl"]),
+                            TokenUrl = new Uri(configuration["TokenUrl"]),
+                            Scopes = configuration.GetSection("ApiScope")
+                                .GetChildren()
+                                .Select(x => x.Value)
+                                .ToArray()
+                                .ToDictionary(a => a, a => a)
+                        }
+
+                    }
+                });
+                c.AddSecurityRequirement(new OpenApiSecurityRequirement
+                {
+                    {
+                        new OpenApiSecurityScheme
+                        {
+                            Reference = new OpenApiReference { Type = ReferenceType.SecurityScheme, Id = "oauth2" },
+                            Scheme = "oauth2",
+                            Name = "oauth2",
+                            In = ParameterLocation.Header
+
+                        },
+                        configuration.GetSection("ApiScope")
+                            .GetChildren()
+                            .Select(x => x.Value)
+                            .ToArray()
+                    }
+                });
+            });
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                .AddMicrosoftIdentityWebApi(configuration.GetSection("AzureAd"));
+
 
             return services;
         }

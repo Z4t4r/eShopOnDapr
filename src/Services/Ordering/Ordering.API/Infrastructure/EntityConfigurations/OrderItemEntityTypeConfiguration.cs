@@ -12,8 +12,8 @@ namespace Microsoft.eShopOnContainers.Services.Ordering.API.Infrastructure.Entit
 
             orderItemConfiguration.HasKey(o => o.Id);
 
-            orderItemConfiguration.Property(o => o.Id)
-                .UseHiLo("orderitemseq");
+            //orderItemConfiguration.Property(o => o.Id)
+            //    .UseHiLo("orderitemseq");
         }
     }
 }

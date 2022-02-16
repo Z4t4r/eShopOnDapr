@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
@@ -18,7 +19,7 @@ namespace Microsoft.eShopOnContainers.Services.Ordering.API.Infrastructure.Facto
 
             var optionsBuilder = new DbContextOptionsBuilder<OrderingContext>();
 
-            optionsBuilder.UseSqlServer(config["ConnectionString"], sqlServerOptionsAction: o => o.MigrationsAssembly("Ordering.API"));
+            optionsBuilder.UseMySql(config["ConnectionString"], new MySqlServerVersion(new Version(8, 0, 27)), o=> o.MigrationsAssembly("Ordering.API"));
 
             return new OrderingContext(optionsBuilder.Options);
         }

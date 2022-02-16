@@ -1,4 +1,6 @@
-﻿namespace Microsoft.eShopOnContainers.Services.Catalog.API.Infrastructure
+﻿using System;
+
+namespace Microsoft.eShopOnContainers.Services.Catalog.API.Infrastructure
 {
     using Microsoft.EntityFrameworkCore;
     using EntityConfigurations;
@@ -27,8 +29,7 @@
         public CatalogContext CreateDbContext(string[] args)
         {
             var optionsBuilder =  new DbContextOptionsBuilder<CatalogContext>()
-                .UseSqlServer("Server=.;Initial Catalog=Microsoft.eShopOnContainers.Services.CatalogDb;Integrated Security=true");
-
+                .UseMySql("server=192.168.31.6;user=root;password=a12345678;database=EShop;",new MySqlServerVersion(new Version(8, 0, 27)));
             return new CatalogContext(optionsBuilder.Options);
         }
     }

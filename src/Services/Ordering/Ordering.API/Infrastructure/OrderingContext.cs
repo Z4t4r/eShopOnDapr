@@ -6,7 +6,7 @@ namespace Microsoft.eShopOnContainers.Services.Ordering.API.Infrastructure
 {
     public class OrderingContext : DbContext
     {
-        public const string DEFAULT_SCHEMA = "ordering";
+        public const string DEFAULT_SCHEMA = null;
 
         public DbSet<Order> Orders { get; set; }
         public DbSet<OrderItem> OrderItems { get; set; }
