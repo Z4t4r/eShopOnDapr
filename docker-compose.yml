@@ -1,129 +1,61 @@
-version: '3.4'
-
+# tye application configuration file
+# read all about it at https://github.com/dotnet/tye
+#
+# when you've given us a try, we'd love to know what you think:
+#    https://aka.ms/AA7q20u
+#
+name: eshopondapr
 services:
-
-  maildev:
-    image: maildev/maildev
-
-  rabbitmq:
-    image: rabbitmq:3-management-alpine
-
-  redis:
-    image: redis:alpine
-
-  seq:
-    image: datalust/seq:latest
-
-  sqldata:
-    image: mcr.microsoft.com/mssql/server:2017-latest 
-
-  zipkin:
-    image: openzipkin/zipkin-slim
-
-  basket-api:
-    image: ${REGISTRY:-eshopdapr}/basket.api:${TAG:-latest}
-    build:
-      context: .
-      dockerfile: src/Services/Basket/Basket.API/Dockerfile
-    depends_on:
-      - identity-api
-      - redis
-
-  basket-api-dapr:
-    image: "daprio/daprd:1.5.1"
-    network_mode: "service:basket-api"
-    depends_on:
-      - basket-api
-
-  blazor-client:
-    image: ${REGISTRY:-eshopdapr}/blazor.client:${TAG:-latest}
-    build:
-      context: .
-      dockerfile: src/Web/BlazorClient.Host/Dockerfile
-
-  catalog-api:
-    image: ${REGISTRY:-eshopdapr}/catalog.api:${TAG:-latest}
-    build:
-      context: .
-      dockerfile: src/Services/Catalog/Catalog.API/Dockerfile
-    depends_on:
-      - sqldata
-
-  catalog-api-dapr:
-    image: "daprio/daprd:1.5.1"
-    network_mode: "service:catalog-api"
-    depends_on:
-      - catalog-api
-
-  identity-api:
-    image: ${REGISTRY:-eshopdapr}/identity.api:${TAG:-latest}
-    build:
-      context: .
-      dockerfile: src/Services/Identity/Identity.API/Dockerfile
-    depends_on:
-      - sqldata
-
-  identity-api-dapr:
-    image: "daprio/daprd:1.5.1"
-    network_mode: "service:identity-api"
-    depends_on:
-      - identity-api
-
-  ordering-api:
-    image: ${REGISTRY:-eshopdapr}/ordering.api:${TAG:-latest}
-    build:
-      context: .
-      dockerfile: src/Services/Ordering/Ordering.API/Dockerfile
-    depends_on:
-      - sqldata
-
-  ordering-api-dapr:
-    image: "daprio/daprd:1.5.1"
-    network_mode: "service:ordering-api"
-    depends_on:
-      - ordering-api
-
-  payment-api:
-    image: ${REGISTRY:-eshopdapr}/payment.api:${TAG:-latest}
-    build:
-      context: .
-      dockerfile: src/Services/Payment/Payment.API/Dockerfile
-
-  payment-api-dapr:
-    image: "daprio/daprd:1.5.1"
-    network_mode: "service:payment-api"
-    depends_on:
-      - payment-api
-
-  webshoppingagg:
-    image: ${REGISTRY:-eshopdapr}/webshoppingagg:${TAG:-latest}
-    build:
-      context: .
-      dockerfile: src/ApiGateways/Aggregators/Web.Shopping.HttpAggregator/Dockerfile
-    depends_on:
-      - basket-api
-      - catalog-api
-      - identity-api
-      - ordering-api
-      - sqldata
-
-  webshoppingagg-dapr:
-    image: "daprio/daprd:1.5.1"
-    network_mode: "service:webshoppingagg"
-    depends_on:
-      - webshoppingagg
-
-  webshoppingapigw:
-    image: envoyproxy/envoy:v1.14.2
-
-  webshoppingapigw-dapr:
-    image: "daprio/daprd:1.5.1"
-    network_mode: "service:webshoppingapigw"
-    depends_on:
-      - webshoppingapigw
-
-  webstatus:
-    image: xabarilcoding/healthchecksui:5.0.0
-
-  dapr-placement:
-    image: "daprio/dapr:1.5.1"
+- name: maildev
+  image: maildev/maildev
+- name: rabbitmq
+  image: rabbitmq:3-management-alpine
+- name: redis
+  image: redis:alpine
+- name: seq
+  image: datalust/seq:latest
+- name: sqldata
+  image: mcr.microsoft.com/mssql/server:2017-latest
+- name: zipkin
+  image: openzipkin/zipkin-slim
+- name: basket-api
+  image: ${REGISTRY:-eshopdapr}/basket.api:${TAG:-latest}
+  dockerFile: src/Services/Basket/Basket.API/Dockerfile
+- name: basket-api-dapr
+  image: daprio/daprd:1.5.1
+- name: blazor-client
+  image: ${REGISTRY:-eshopdapr}/blazor.client:${TAG:-latest}
+  dockerFile: src/Web/BlazorClient.Host/Dockerfile
+- name: catalog-api
+  image: ${REGISTRY:-eshopdapr}/catalog.api:${TAG:-latest}
+  dockerFile: src/Services/Catalog/Catalog.API/Dockerfile
+- name: catalog-api-dapr
+  image: daprio/daprd:1.5.1
+- name: identity-api
+  image: ${REGISTRY:-eshopdapr}/identity.api:${TAG:-latest}
+  dockerFile: src/Services/Identity/Identity.API/Dockerfile
+- name: identity-api-dapr
+  image: daprio/daprd:1.5.1
+- name: ordering-api
+  image: ${REGISTRY:-eshopdapr}/ordering.api:${TAG:-latest}
+  dockerFile: src/Services/Ordering/Ordering.API/Dockerfile
+- name: ordering-api-dapr
+  image: daprio/daprd:1.5.1
+- name: payment-api
+  image: ${REGISTRY:-eshopdapr}/payment.api:${TAG:-latest}
+  dockerFile: src/Services/Payment/Payment.API/Dockerfile
+- name: payment-api-dapr
+  image: daprio/daprd:1.5.1
+- name: webshoppingagg
+  image: ${REGISTRY:-eshopdapr}/webshoppingagg:${TAG:-latest}
+  dockerFile: src/ApiGateways/Aggregators/Web.Shopping.HttpAggregator/Dockerfile
+- name: webshoppingagg-dapr
+  image: daprio/daprd:1.5.1
+- name: webshoppingapigw
+  image: envoyproxy/envoy:v1.14.2
+- name: webshoppingapigw-dapr
+  image: daprio/daprd:1.5.1
+- name: webstatus
+  image: xabarilcoding/healthchecksui:5.0.0
+- name: dapr-placement
+  image: daprio/dapr:1.5.1
