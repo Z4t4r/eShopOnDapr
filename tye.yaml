@@ -5,6 +5,16 @@
 #    https://aka.ms/AA7q20u
 #
 name: eshopondapr
+registry: ccr.ccs.tencentyun.com/v4ni11a
+extensions:
+  - name: dapr
+    components-path: "./dapr_components/"
+  # config: claptrap_config
+  #    exclude-placement-container: true
+  #    placement-port: 6050
+  - name: zipkin
+  - name: seq
+    logPath: ./.logs
 services:
 - name: identity-api
   project: src/Services/Identity/Identity.API/Identity.API.csproj
@@ -22,3 +32,27 @@ services:
   project: src/Web/BlazorClient/BlazorClient.csproj
 - name: blazorclient-host
   project: src/Web/BlazorClient.Host/BlazorClient.Host.csproj
+
+- name: mysql
+  external: true
+ingress:
+  - name: eshop-gateway
+    bindings:
+      - port: 8080
+    rules:
+      - path: /Catalog
+        service: catalog-api
+      - path: /Basket
+        service: basket-api
+      - host: catalog.example.com
+        service: catalog-api
+      - host: basket.example.com
+        service: basket-api
+      - host: ordering.example.com
+        service: ordering-api
+      - host: payment.example.com
+        service: payment-api
+#      - host: webspa.example.com
+#        service: webspa
+#      - host: webstatus.example.com
+#        service: webstatus
