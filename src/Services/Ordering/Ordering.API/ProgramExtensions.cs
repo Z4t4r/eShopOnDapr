@@ -17,8 +17,8 @@ public static class ProgramExtensions
 
     public static void AddCustomSerilog(this WebApplicationBuilder builder)
     {
-        var seqServerUrl = builder.Configuration["SeqServerUrl"];
-
+        //var seqServerUrl = builder.Configuration["SeqServerUrl"];
+        var seqServerUrl = builder.Configuration.GetServiceUri("seq").ToString();
         Log.Logger = new LoggerConfiguration()
             .ReadFrom.Configuration(builder.Configuration)
             .WriteTo.Console()
@@ -100,7 +100,8 @@ public static class ProgramExtensions
             .AddCheck("self", () => HealthCheckResult.Healthy())
             .AddDapr()
             .AddSqlServer(
-                builder.Configuration["ConnectionStrings:OrderingDB"],
+                //builder.Configuration["ConnectionStrings:OrderingDB"],
+                builder.Configuration.GetConnectionString("sql"),
                 name: "OrderingDB-check",
                 tags: new string[] { "orderdb" });
 
@@ -117,7 +118,7 @@ public static class ProgramExtensions
 
     public static void AddCustomDatabase(this WebApplicationBuilder builder) =>
         builder.Services.AddDbContext<OrderingDbContext>(
-            options => options.UseSqlServer(builder.Configuration["ConnectionStrings:OrderingDB"]));
+            options => options.UseSqlServer(builder.Configuration.GetConnectionString("sql")));
 
     public static void ApplyDatabaseMigration(this WebApplication app)
     {

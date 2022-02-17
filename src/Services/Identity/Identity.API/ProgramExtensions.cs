@@ -16,7 +16,8 @@ public static class ProgramExtensions
 
     public static void AddCustomSerilog(this WebApplicationBuilder builder)
     {
-        var seqServerUrl = builder.Configuration["SeqServerUrl"];
+        //var seqServerUrl = builder.Configuration["SeqServerUrl"];
+        var seqServerUrl = builder.Configuration.GetServiceUri("seq").ToString();
 
         Log.Logger = new LoggerConfiguration()
             .ReadFrom.Configuration(builder.Configuration)
@@ -35,7 +36,7 @@ public static class ProgramExtensions
 
     public static void AddCustomDatabase(this WebApplicationBuilder builder) =>
         builder.Services.AddDbContext<ApplicationDbContext>(
-            options => options.UseSqlServer(builder.Configuration["ConnectionStrings:IdentityDB"]));
+            options => options.UseSqlServer(builder.Configuration.GetConnectionString("sql")));
 
     public static void AddCustomIdentity(this WebApplicationBuilder builder)
     {
@@ -75,7 +76,7 @@ public static class ProgramExtensions
     {
         builder.Services.AddHealthChecks()
                 .AddCheck("self", () => HealthCheckResult.Healthy())
-                .AddSqlServer(builder.Configuration["ConnectionStrings:IdentityDB"],
+                .AddSqlServer(builder.Configuration.GetConnectionString("sql"),
                     name: "IdentityDB-check",
                     tags: new string[] { "IdentityDB" });
     }

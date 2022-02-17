@@ -9,8 +9,8 @@ public static class ProgramExtensions
 
     public static void AddCustomSerilog(this WebApplicationBuilder builder)
     {
-        var seqServerUrl = builder.Configuration["SeqServerUrl"];
-
+        //var seqServerUrl = builder.Configuration["SeqServerUrl"];
+        var seqServerUrl = builder.Configuration.GetServiceUri("seq").ToString();
         Log.Logger = new LoggerConfiguration()
             .ReadFrom.Configuration(builder.Configuration)
             .WriteTo.Console()

@@ -17,7 +17,8 @@ public static class ProgramExtensions
 
     public static void AddCustomSerilog(this WebApplicationBuilder builder)
     {
-        var seqServerUrl = builder.Configuration["SeqServerUrl"];
+        //var seqServerUrl = builder.Configuration["SeqServerUrl"];
+        var seqServerUrl = builder.Configuration.GetServiceUri("seq").ToString();
 
         Log.Logger = new LoggerConfiguration()
             .ReadFrom.Configuration(builder.Configuration)
@@ -62,7 +63,7 @@ public static class ProgramExtensions
 
     public static void AddCustomDatabase(this WebApplicationBuilder builder) =>
         builder.Services.AddDbContext<CatalogDbContext>(
-            options => options.UseSqlServer(builder.Configuration["ConnectionStrings:CatalogDB"]));
+            options => options.UseSqlServer(builder.Configuration.GetConnectionString("sql")));
 
     public static void ApplyDatabaseMigration(this WebApplication app)
     {
